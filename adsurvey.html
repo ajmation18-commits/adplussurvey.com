@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AdPulse — Watch. Answer. Earn.</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --indigo: #1A1A2E;
+    --violet: #7C3AED;
+    --violet-light: #9B5CF6;
+    --gold: #F59E0B;
+    --gold-light: #FCD34D;
+    --white: #F8F7FF;
+    --slate: #94A3B8;
+    --card: #22224A;
+    --border: #2E2E5A;
+  }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--indigo);
+    color: var(--white);
+    min-height: 100vh;
+  }
+
+  /* NAV */
+  nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.25rem 2rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.4rem;
+    letter-spacing: -0.02em;
+  }
+  .logo span { color: var(--gold); }
+  .nav-right {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+  }
+  .points-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(245,158,11,0.12);
+    border: 1px solid rgba(245,158,11,0.3);
+    padding: 0.4rem 0.9rem;
+    border-radius: 2rem;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--gold-light);
+  }
+  .coin-icon { font-size: 1rem; }
+  .avatar {
+    width: 36px; height: 36px;
+    background: linear-gradient(135deg, var(--violet), var(--gold));
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.8rem;
+  }
+
+  /* HERO */
+  .hero {
+    text-align: center;
+    padding: 3.5rem 2rem 2rem;
+  }
+  .hero-eyebrow {
+    display: inline-block;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--violet-light);
+    margin-bottom: 1rem;
+  }
+  .hero h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+    margin-bottom: 0.75rem;
+  }
+  .hero h1 em { font-style: normal; color: var(--gold); }
+  .hero p {
+    color: var(--slate);
+    font-size: 1rem;
+    max-width: 480px;
+    margin: 0 auto 2rem;
+    line-height: 1.6;
+  }
+
+  /* PROGRESS STRIP */
+  .progress-strip {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin: 0 auto 2.5rem;
+    max-width: 480px;
+  }
+  .progress-label { font-size: 0.82rem; color: var(--slate); white-space: nowrap; }
+  .progress-bar-wrap {
+    flex: 1;
+    height: 8px;
+    background: var(--border);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    width: 40%;
+    background: linear-gradient(90deg, var(--violet), var(--gold));
+    border-radius: 99px;
+    transition: width 0.8s ease;
+  }
+  .progress-pct {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--gold);
+    white-space: nowrap;
+  }
+
+  /* MAIN LAYOUT */
+  .main {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 1.5rem;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 2rem 3rem;
+  }
+
+  /* AD PLAYER */
+  .ad-player {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+  }
+  .video-area {
+    position: relative;
+    background: #0D0D1A;
+    aspect-ratio: 16/9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    overflow: hidden;
+  }
+  .video-gradient {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 30% 60%, rgba(124,58,237,0.25) 0%, transparent 70%),
+                radial-gradient(ellipse at 80% 30%, rgba(245,158,11,0.15) 0%, transparent 60%);
+  }
+  .ad-label {
+    position: absolute;
+    top: 12px; left: 12px;
+    background: rgba(245,158,11,0.9);
+    color: #000;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 4px;
+  }
+  .play-btn {
+    position: relative;
+    z-index: 2;
+    width: 64px; height: 64px;
+    background: rgba(124,58,237,0.9);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    border: none; cursor: pointer;
+    transition: transform 0.2s, background 0.2s;
+    box-shadow: 0 0 32px rgba(124,58,237,0.5);
+  }
+  .play-btn:hover { transform: scale(1.1); background: var(--violet-light); }
+  .play-icon {
+    width: 0; height: 0;
+    border-style: solid;
+    border-width: 12px 0 12px 22px;
+    border-color: transparent transparent transparent #fff;
+    margin-left: 4px;
+  }
+  .video-title {
+    position: absolute;
+    bottom: 12px; left: 12px; right: 12px;
+    font-size: 0.82rem;
+    color: rgba(248,247,255,0.7);
+  }
+
+  /* Timer ring */
+  .timer-ring-wrap {
+    position: absolute;
+    right: 14px; bottom: 14px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .ring-svg { transform: rotate(-90deg); }
+  .ring-bg { fill: none; stroke: rgba(255,255,255,0.1); stroke-width: 3; }
+  .ring-fill {
+    fill: none;
+    stroke: var(--gold);
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-dasharray: 100;
+    stroke-dashoffset: 65;
+    transition: stroke-dashoffset 1s linear;
+  }
+  .ring-text {
+    position: absolute;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--gold-light);
+  }
+
+  .player-controls {
+    padding: 1rem 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .ad-meta { flex: 1; }
+  .ad-brand {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+  }
+  .ad-desc { font-size: 0.78rem; color: var(--slate); margin-top: 2px; }
+  .reward-chip {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    background: rgba(245,158,11,0.1);
+    border: 1px solid rgba(245,158,11,0.25);
+    padding: 0.3rem 0.7rem;
+    border-radius: 2rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--gold);
+  }
+
+  /* SURVEY SECTION */
+  .survey-section { padding: 1.25rem; border-top: 1px solid var(--border); }
+  .survey-heading {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--slate);
+    margin-bottom: 1rem;
+  }
+  .question-text {
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1.5;
+    margin-bottom: 1rem;
+  }
+  .options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+  .option {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+    font-size: 0.9rem;
+  }
+  .option:hover { border-color: var(--violet-light); background: rgba(124,58,237,0.08); }
+  .option.selected { border-color: var(--violet); background: rgba(124,58,237,0.15); }
+  .option-dot {
+    width: 18px; height: 18px;
+    border: 2px solid var(--border);
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    transition: border-color 0.15s;
+  }
+  .option.selected .option-dot { border-color: var(--violet); background: var(--violet); }
+  .option.selected .option-dot::after {
+    content: '';
+    width: 8px; height: 8px;
+    background: #fff;
+    border-radius: 50%;
+  }
+
+  .submit-btn {
+    width: 100%;
+    margin-top: 1.25rem;
+    padding: 0.85rem;
+    background: linear-gradient(135deg, var(--violet), #6D28D9);
+    color: #fff;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.15s;
+    letter-spacing: 0.02em;
+  }
+  .submit-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+  .submit-btn:disabled { opacity: 0.35; cursor: not-allowed; transform: none; }
+
+  /* SIDEBAR */
+  .sidebar { display: flex; flex-direction: column; gap: 1.25rem; }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.25rem;
+  }
+  .card-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--slate);
+    margin-bottom: 1rem;
+  }
+
+  /* EARN RING — signature element */
+  .earn-ring-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .earn-ring-svg { filter: drop-shadow(0 0 18px rgba(245,158,11,0.4)); }
+  .earn-ring-bg { fill: none; stroke: var(--border); stroke-width: 8; }
+  .earn-ring-fill {
+    fill: none;
+    stroke: url(#ringGrad);
+    stroke-width: 8;
+    stroke-linecap: round;
+    stroke-dasharray: 339;
+    stroke-dashoffset: 203;
+    transition: stroke-dashoffset 1.2s cubic-bezier(.4,0,.2,1);
+  }
+  .earn-ring-center {
+    display: flex; flex-direction: column; align-items: center;
+    position: absolute;
+  }
+  .earn-ring-outer { position: relative; display: flex; align-items: center; justify-content: center; }
+  .earn-ring-pts {
+    font-family: 'Syne', sans-serif;
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--gold-light);
+    line-height: 1;
+  }
+  .earn-ring-label { font-size: 0.72rem; color: var(--slate); margin-top: 2px; }
+  .earn-ring-sub { font-size: 0.82rem; color: var(--slate); text-align: center; }
+  .earn-ring-sub strong { color: var(--gold); }
+
+  /* STATS */
+  .stat-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.88rem;
+  }
+  .stat-row:last-child { border-bottom: none; padding-bottom: 0; }
+  .stat-label { color: var(--slate); }
+  .stat-val { font-weight: 600; }
+  .stat-val.up { color: #34D399; }
+
+  /* ADS QUEUE */
+  .queue-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.65rem 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.88rem;
+    cursor: pointer;
+    transition: opacity 0.15s;
+  }
+  .queue-item:last-child { border-bottom: none; padding-bottom: 0; }
+  .queue-item:hover { opacity: 0.8; }
+  .queue-thumb {
+    width: 44px; height: 32px;
+    border-radius: 6px;
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem;
+  }
+  .queue-info { flex: 1; }
+  .queue-brand { font-weight: 600; line-height: 1.2; }
+  .queue-dur { font-size: 0.75rem; color: var(--slate); }
+  .queue-pts {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--gold);
+    background: rgba(245,158,11,0.1);
+    padding: 2px 8px;
+    border-radius: 99px;
+  }
+  .queue-item.active .queue-brand { color: var(--violet-light); }
+
+  /* REDEEM BTN */
+  .redeem-btn {
+    width: 100%;
+    padding: 0.75rem;
+    background: linear-gradient(135deg, rgba(245,158,11,0.15), rgba(245,158,11,0.05));
+    border: 1px solid rgba(245,158,11,0.35);
+    color: var(--gold-light);
+    font-family: 'Syne', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.2s;
+    letter-spacing: 0.02em;
+  }
+  .redeem-btn:hover { background: linear-gradient(135deg, rgba(245,158,11,0.25), rgba(245,158,11,0.1)); }
+
+  /* TOAST */
+  .toast {
+    position: fixed;
+    bottom: 2rem; left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: #22224A;
+    border: 1px solid var(--violet);
+    color: var(--white);
+    padding: 0.75rem 1.5rem;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    transition: transform 0.3s ease, opacity 0.3s;
+    opacity: 0;
+    z-index: 100;
+    white-space: nowrap;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+  @media (max-width: 720px) {
+    .main { grid-template-columns: 1fr; }
+    .hero h1 { font-size: 1.8rem; }
+    nav { padding: 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">Ad<span>Pulse</span></div>
+  <div class="nav-right">
+    <div class="points-badge">
+      <span class="coin-icon">🪙</span>
+      <span id="navPoints">1,240</span> pts
+    </div>
+    <div class="avatar">JD</div>
+  </div>
+</nav>
+
+<div class="hero">
+  <span class="hero-eyebrow">Earn real rewards</span>
+  <h1>Watch ads.<br><em>Share your opinion.</em></h1>
+  <p>Complete short ad surveys and rack up points you can redeem for gift cards, cash, or discounts.</p>
+
+  <div class="progress-strip">
+    <span class="progress-label">Daily goal</span>
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-fill" id="dailyBar"></div>
+    </div>
+    <span class="progress-pct" id="dailyPct">2 / 5 ads</span>
+  </div>
+</div>
+
+<div class="main">
+  <!-- AD PLAYER -->
+  <div class="ad-player">
+    <div class="video-area" id="videoArea" onclick="startAd()">
+      <div class="video-gradient"></div>
+      <div class="ad-label">AD</div>
+      <button class="play-btn" id="playBtn">
+        <div class="play-icon"></div>
+      </button>
+      <div class="video-title" id="videoTitle">Sunrise Coffee Co. — "Your Morning Ritual" · :30</div>
+      <div class="timer-ring-wrap" id="timerRingWrap" style="display:none">
+        <svg class="ring-svg" width="44" height="44" viewBox="0 0 44 44">
+          <circle class="ring-bg" cx="22" cy="22" r="16"/>
+          <circle class="ring-fill" id="ringFill" cx="22" cy="22" r="16"/>
+        </svg>
+        <span class="ring-text" id="ringText">30</span>
+      </div>
+    </div>
+
+    <div class="player-controls">
+      <div class="ad-meta">
+        <div class="ad-brand" id="adBrand">Sunrise Coffee Co.</div>
+        <div class="ad-desc" id="adDesc">Premium single-origin coffee — 30 sec</div>
+      </div>
+      <div class="reward-chip">🪙 +80 pts</div>
+    </div>
+
+    <div class="survey-section">
+      <div class="survey-heading">Quick survey</div>
+      <div class="question-text" id="questionText">
+        After watching this ad, how likely are you to try Sunrise Coffee Co.?
+      </div>
+      <div class="options" id="optionsWrap">
+        <div class="option" onclick="selectOption(this, 0)">
+          <div class="option-dot"></div>Very likely — I'd buy it today
+        </div>
+        <div class="option" onclick="selectOption(this, 1)">
+          <div class="option-dot"></div>Somewhat likely — I'd consider it
+        </div>
+        <div class="option" onclick="selectOption(this, 2)">
+          <div class="option-dot"></div>Neutral — maybe someday
+        </div>
+        <div class="option" onclick="selectOption(this, 3)">
+          <div class="option-dot"></div>Not likely — not my type of product
+        </div>
+      </div>
+      <button class="submit-btn" id="submitBtn" disabled onclick="submitSurvey()">Submit & Earn 80 pts →</button>
+    </div>
+  </div>
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+
+    <!-- EARN RING -->
+    <div class="card" style="text-align:center;">
+      <div class="card-title">Points Balance</div>
+      <div class="earn-ring-wrap">
+        <div class="earn-ring-outer">
+          <svg class="earn-ring-svg" width="130" height="130" viewBox="0 0 130 130">
+            <defs>
+              <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#7C3AED"/>
+                <stop offset="100%" stop-color="#F59E0B"/>
+              </linearGradient>
+            </defs>
+            <circle class="earn-ring-bg" cx="65" cy="65" r="54" transform="rotate(-90 65 65)"/>
+            <circle class="earn-ring-fill" id="earnRingFill" cx="65" cy="65" r="54" transform="rotate(-90 65 65)"/>
+          </svg>
+          <div class="earn-ring-center">
+            <div class="earn-ring-pts" id="ringPoints">1,240</div>
+            <div class="earn-ring-label">points</div>
+          </div>
+        </div>
+        <div class="earn-ring-sub">
+          <strong>760 pts</strong> until your next reward tier
+        </div>
+      </div>
+      <button class="redeem-btn" style="margin-top:1rem" onclick="showToast('Redeem feature coming soon!')">Redeem Points</button>
+    </div>
+
+    <!-- STATS -->
+    <div class="card">
+      <div class="card-title">Your Stats</div>
+      <div class="stat-row">
+        <span class="stat-label">Ads watched today</span>
+        <span class="stat-val" id="adsToday">2</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">Surveys completed</span>
+        <span class="stat-val">14</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">Points earned today</span>
+        <span class="stat-val up" id="ptsToday">+160</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">Streak</span>
+        <span class="stat-val">🔥 4 days</span>
+      </div>
+    </div>
+
+    <!-- AD QUEUE -->
+    <div class="card">
+      <div class="card-title">Up Next</div>
+
+      <div class="queue-item active">
+        <div class="queue-thumb" style="background:rgba(124,58,237,0.15)">☕</div>
+        <div class="queue-info">
+          <div class="queue-brand">Sunrise Coffee Co.</div>
+          <div class="queue-dur">:30 • Playing now</div>
+        </div>
+        <div class="queue-pts">80 pts</div>
+      </div>
+
+      <div class="queue-item" onclick="showToast('Finish the current ad first!')">
+        <div class="queue-thumb" style="background:rgba(59,130,246,0.1)">👟</div>
+        <div class="queue-info">
+          <div class="queue-brand">FlexRun Shoes</div>
+          <div class="queue-dur">:15 • New</div>
+        </div>
+        <div class="queue-pts">45 pts</div>
+      </div>
+
+      <div class="queue-item" onclick="showToast('Finish the current ad first!')">
+        <div class="queue-thumb" style="background:rgba(16,185,129,0.1)">🌿</div>
+        <div class="queue-info">
+          <div class="queue-brand">Verdure Skincare</div>
+          <div class="queue-dur">:30 • Featured</div>
+        </div>
+        <div class="queue-pts">90 pts</div>
+      </div>
+
+      <div class="queue-item" onclick="showToast('Finish the current ad first!')">
+        <div class="queue-thumb" style="background:rgba(239,68,68,0.1)">📱</div>
+        <div class="queue-info">
+          <div class="queue-brand">Pixel App Studio</div>
+          <div class="queue-dur">:20 • New</div>
+        </div>
+        <div class="queue-pts">55 pts</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  let selectedOption = null;
+  let adPlaying = false;
+  let timerInterval = null;
+  let timeLeft = 30;
+  let totalPoints = 1240;
+
+  function selectOption(el, idx) {
+    document.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+    el.classList.add('selected');
+    selectedOption = idx;
+    document.getElementById('submitBtn').disabled = false;
+  }
+
+  function startAd() {
+    if (adPlaying) return;
+    adPlaying = true;
+    const playBtn = document.getElementById('playBtn');
+    const timerWrap = document.getElementById('timerRingWrap');
+    const ringFill = document.getElementById('ringFill');
+    const ringText = document.getElementById('ringText');
+
+    playBtn.style.display = 'none';
+    timerWrap.style.display = 'flex';
+
+    const circumference = 2 * Math.PI * 16;
+    timeLeft = 30;
+
+    timerInterval = setInterval(() => {
+      timeLeft--;
+      ringText.textContent = timeLeft;
+      const progress = (30 - timeLeft) / 30;
+      ringFill.style.strokeDashoffset = 100 - (progress * 100);
+
+      if (timeLeft <= 0) {
+        clearInterval(timerInterval);
+        ringText.textContent = '✓';
+        ringFill.style.stroke = '#34D399';
+        showToast('Ad complete! Answer the survey to earn your points.');
+      }
+    }, 1000);
+  }
+
+  function submitSurvey() {
+    if (selectedOption === null) return;
+
+    // Award points
+    totalPoints += 80;
+    document.getElementById('navPoints').textContent = totalPoints.toLocaleString();
+    document.getElementById('ringPoints').textContent = totalPoints.toLocaleString();
+
+    // Update stats
+    const today = parseInt(document.getElementById('adsToday').textContent) + 1;
+    document.getElementById('adsToday').textContent = today;
+    const ptsEl = document.getElementById('ptsToday');
+    const prevPts = parseInt(ptsEl.textContent.replace(/[^0-9]/g, '')) + 80;
+    ptsEl.textContent = '+' + prevPts;
+
+    // Update progress
+    const barFill = document.getElementById('dailyBar');
+    barFill.style.width = (today / 5 * 100) + '%';
+    document.getElementById('dailyPct').textContent = today + ' / 5 ads';
+
+    // Update earn ring
+    const ringProgress = Math.min(totalPoints / 2000, 1);
+    const ringCirc = 2 * Math.PI * 54;
+    document.getElementById('earnRingFill').style.strokeDashoffset = ringCirc * (1 - ringProgress);
+
+    showToast('🎉 +80 points earned! Keep going!');
+
+    // Reset for next ad
+    setTimeout(() => {
+      adPlaying = false;
+      selectedOption = null;
+      document.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+      document.getElementById('submitBtn').disabled = true;
+      document.getElementById('playBtn').style.display = 'flex';
+      document.getElementById('timerRingWrap').style.display = 'none';
+      document.getElementById('ringFill').style.strokeDashoffset = 65;
+      document.getElementById('ringFill').style.stroke = '';
+      document.getElementById('ringText').textContent = '30';
+    }, 1200);
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2800);
+  }
+
+  // Init earn ring
+  window.addEventListener('load', () => {
+    const ringCirc = 2 * Math.PI * 54;
+    const progress = 1240 / 2000;
+    document.getElementById('earnRingFill').style.strokeDasharray = ringCirc;
+    document.getElementById('earnRingFill').style.strokeDashoffset = ringCirc * (1 - progress);
+  });
+</script>
+</body>
+</html>
